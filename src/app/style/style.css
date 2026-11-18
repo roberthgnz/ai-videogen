@@ -1,0 +1,152 @@
+/*
+ * «Mi estilo»: the profile editor (also shown inside the studio, so it carries its own styles and does not lean on
+ * settings.css or studio.css), the page that lists the profiles, and the studio's card and chat proposals.
+ * Same surfaces as Ajustes: grouped grey page, inset cards with hairlines between rows.
+ */
+
+/* ---- Editor ------------------------------------------------------------------------------------------ */
+.style-editor { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.style-card { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px 20px; border-radius: 18px; background: var(--surface-strong); }
+.style-card > header h2 { font-size: 16px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
+.style-card > header p { margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.5; text-wrap: pretty; }
+.style-field { display: flex; flex-direction: column; gap: 6px; }
+.style-field > span { font-size: 12.5px; font-weight: 550; }
+.style-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-top: 12px; border-top: 1px solid var(--border); }
+.style-row > div:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.style-row strong { font-size: 13.5px; font-weight: 550; }
+.style-row > div:first-child > span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.style-unit { display: flex; flex: none; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; }
+.style-unit input { width: 84px; }
+.style-muted { color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.style-error { color: var(--danger); font-size: 12.5px; line-height: 1.5; }
+.style-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.style-switch { display: inline-flex; flex: none; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer; }
+
+/* A colour well: the swatch is the control, the native picker sits invisible on top of it. */
+.style-swatch { position: relative; display: block; flex: none; width: 30px; height: 30px; border-radius: 9px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent); cursor: pointer; transition: scale .4s var(--spring); }
+.style-swatch:active { scale: .92; transition-duration: .1s; }
+.style-swatch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.style-colors { display: flex; flex-direction: column; gap: 8px; }
+.style-colors li { display: grid; grid-template-columns: auto 74px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.style-colors code { font: 12px var(--font-mono), monospace; color: var(--muted); }
+
+.style-font { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+.style-font-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.style-font-head > div { display: flex; flex-direction: column; gap: 2px; }
+.style-font-head strong { font-size: 13.5px; font-weight: 550; }
+.style-font-head > div span { color: var(--muted); font-size: 12px; }
+.style-font-sample { font-size: 22px; line-height: 1; white-space: nowrap; }
+.style-font-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+
+.style-logos { display: flex; flex-direction: column; gap: 10px; }
+.style-logos li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.style-logos li > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.style-logos strong { overflow: hidden; font-size: 13px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.style-logo-thumb { display: grid; place-items: center; width: 56px; height: 56px; overflow: hidden; border-radius: 12px; background: repeating-conic-gradient(var(--fill) 0 25%, transparent 0 50%) 0 0 / 12px 12px; }
+.style-logo-thumb img, .style-picker-grid img { width: 100%; height: 100%; object-fit: contain; }
+.style-picker { padding: 12px; border-radius: 14px; background: var(--fill); animation: rise-in 320ms var(--spring) both; }
+.style-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; max-height: 280px; overflow: auto; }
+.style-picker-grid button { display: flex; flex-direction: column; gap: 6px; padding: 6px; border-radius: 12px; background: var(--surface-strong); color: var(--foreground); font-size: 11.5px; text-align: left; cursor: pointer; transition: box-shadow .15s, scale .4s var(--spring); }
+.style-picker-grid button:hover:not(:disabled) { box-shadow: 0 0 0 2px var(--accent); }
+.style-picker-grid button:active:not(:disabled) { scale: .96; transition-duration: .1s; }
+.style-picker-grid button:disabled { opacity: .5; cursor: default; }
+.style-picker-grid button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--accent); opacity: 1; }
+.style-picker-grid button img { aspect-ratio: 1; border-radius: 8px; background: repeating-conic-gradient(var(--fill) 0 25%, transparent 0 50%) 0 0 / 12px 12px; }
+.style-picker-grid button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Subtitles: the fields, and beside them a phone that shows where and how they sit. */
+.style-captions { display: grid; grid-template-columns: minmax(0, 1fr) 132px; gap: 20px; align-items: start; }
+.style-captions-fields { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.style-caption-colors { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+.style-range { width: 100%; accent-color: var(--accent); }
+.style-range-inline { flex: none; width: 160px; }
+.style-phone { position: sticky; top: 12px; container-type: inline-size; aspect-ratio: 9 / 16; overflow: hidden; border-radius: 18px; background: linear-gradient(160deg, #3b3550, #15121e 70%); box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--foreground) 12%, transparent); }
+.style-phone::before { content: ""; position: absolute; top: 18%; left: 50%; width: 38%; aspect-ratio: 1; translate: -50% 0; border-radius: 50%; background: color-mix(in srgb, #ffffff 16%, transparent); }
+.style-phone-text { position: absolute; left: 5%; width: 90%; padding: .3em; box-sizing: border-box; line-height: 1.18; text-align: center; overflow-wrap: anywhere; transition: top .35s var(--spring); }
+.style-phone-text b { font-weight: inherit; }
+
+.style-rules { display: flex; flex-direction: column; gap: 8px; }
+.style-rules li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; }
+.style-rule-source { padding: 3px 8px; border-radius: 99px; background: var(--fill); color: var(--muted); font-size: 11px; white-space: nowrap; }
+.style-rule-source[data-source="learned"] { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--tint); }
+.style-rule-add { display: flex; gap: 8px; }
+
+@media (max-width: 760px) {
+  .style-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .style-captions { grid-template-columns: 1fr; }
+  .style-phone { position: static; width: 132px; margin: 0 auto; }
+  .style-font-controls { grid-template-columns: 1fr 1fr; }
+  .style-colors li { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .style-colors code { display: none; }
+  .style-range-inline { width: 100%; }
+}
+
+/* ---- Page: the list of profiles on the left, the open one on the right ------------------------------- */
+.home:has(.style-page) { background: var(--grouped); }
+.style-page { display: grid; grid-template-columns: 260px minmax(0, 760px); gap: 40px; width: 100%; max-width: 1100px; margin: 0 auto; padding: 32px 24px 120px; }
+.style-list { position: sticky; top: calc(var(--titlebar-height, 0px) + 80px); display: flex; flex-direction: column; gap: 6px; align-self: start; }
+.style-list h1 { margin: 0 0 4px 10px; font-size: 28px; font-weight: 700; letter-spacing: -.025em; line-height: 1.15; }
+.style-list > p { margin: 0 0 12px 10px; color: var(--muted); font-size: 12.5px; line-height: 1.5; text-wrap: pretty; }
+.style-list ul { display: flex; flex-direction: column; gap: 2px; }
+.style-list li button { display: flex; width: 100%; flex-direction: column; gap: 2px; padding: 9px 10px; border-radius: 12px; color: var(--foreground); text-align: left; cursor: pointer; transition: background-color .15s; }
+.style-list li button:hover { background: var(--fill); }
+.style-list li button[aria-current="true"] { background: var(--surface-strong); box-shadow: var(--shadow-soft); }
+.style-list li strong { font-size: 13.5px; font-weight: 600; }
+.style-list li span { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.style-list li i { display: flex; gap: 3px; margin-top: 4px; }
+.style-list li i em { width: 12px; height: 12px; border-radius: 4px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent); }
+.style-list > .ui-button { margin-top: 8px; align-self: flex-start; }
+.style-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.style-main-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.style-main-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.style-main-head p { margin-top: 2px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.style-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 28px; border-radius: 18px; background: var(--surface-strong); }
+.style-empty h2 { font-size: 19px; font-weight: 650; letter-spacing: -.015em; }
+.style-empty p { max-width: 520px; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
+.style-empty ol { display: flex; flex-direction: column; gap: 4px; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.5; list-style: decimal; }
+.style-savebar { position: fixed; bottom: 20px; left: 50%; z-index: 40; display: flex; align-items: center; gap: 8px; transform: translate(-50%, 140%); padding: 8px 8px 8px 18px; border-radius: 99px; background: var(--material-thick); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); box-shadow: var(--shadow-pop); font-size: 13px; font-weight: 500; opacity: 0; transition: transform .5s var(--spring), opacity .2s; }
+.style-savebar button { border-radius: 99px; }
+.style-savebar[data-visible] { transform: translate(-50%, 0); opacity: 1; }
+.style-savebar > span { margin-right: 8px; white-space: nowrap; }
+.style-notice { padding: 10px 14px; border-radius: 12px; background: color-mix(in srgb, var(--success) 14%, transparent); font-size: 13px; line-height: 1.5; }
+.style-notice[data-error] { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+/* Above the bottom tab bar of a narrow window (home.css), as the Ajustes save bar. */
+@media (max-width: 700px) {
+  .home .style-savebar { bottom: calc(68px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 860px) {
+  .style-page { grid-template-columns: 1fr; gap: 16px; padding: 16px 16px 120px; }
+  .style-list { position: static; }
+  .style-savebar { right: 16px; left: 16px; transform: translateY(140%); justify-content: flex-end; border-radius: 22px; }
+  .style-savebar[data-visible] { transform: none; }
+  .style-savebar > span { white-space: normal; }
+}
+
+/* ---- Studio: the «Mi estilo» card in Referencias, its review dialog, and proposals in the chat -------- */
+.style-studio-card { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; padding: 14px; border-radius: 14px; background: var(--fill); }
+.style-studio-card > header { display: flex; align-items: center; gap: 8px; }
+.style-studio-card > header strong { flex: 1; font-size: 13px; font-weight: 650; }
+.style-studio-card > header a { color: var(--tint); font-size: 12px; font-weight: 500; }
+.style-studio-card > p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.style-studio-card .style-actions .ui-button { flex: 1 1 auto; justify-content: center; }
+.style-studio-summary { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+.style-studio-summary i { display: flex; flex: none; gap: 2px; }
+.style-studio-summary em { width: 10px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 14%, transparent); }
+.style-overlay { position: fixed; inset: 0; z-index: 50; }
+.style-dialog { position: fixed; top: 50%; left: 50%; z-index: 50; display: flex; flex-direction: column; width: min(780px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); translate: -50% -50%; overflow: hidden; border-radius: 22px; background: var(--grouped); outline: none; }
+.style-dialog > header { display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px 12px; }
+.style-dialog > header > div { flex: 1; min-width: 0; }
+.style-dialog h2 { font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
+.style-dialog > header p { margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.5; text-wrap: pretty; }
+.style-dialog-body { flex: 1; min-height: 0; overflow: auto; padding: 0 20px 20px; }
+.style-dialog > footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border); background: var(--surface-strong); }
+.style-dialog > footer .style-error { flex: 1 1 100%; }
+.style-proposals { display: flex; flex: none; flex-direction: column; gap: 8px; }
+.style-proposal { display: flex; flex-direction: column; gap: 10px; }
+.style-proposal > p, .style-proposal > small, .style-proposal .pro-label small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.style-proposal header { display: flex; flex-direction: column; gap: 2px; }
+.style-proposal header strong { font-size: 13px; }
+.style-proposal header span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.style-proposal textarea { min-height: 0; font-size: 13px; }
+.style-proposal .chat-row { display: flex; gap: 8px; }
+.style-proposal .chat-row > * { flex: 1; }

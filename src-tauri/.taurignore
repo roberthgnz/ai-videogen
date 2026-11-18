@@ -1,0 +1,4 @@
+resources/**
+binaries/**
+target/**
+gen/**

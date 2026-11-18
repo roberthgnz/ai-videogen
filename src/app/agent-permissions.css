@@ -1,0 +1,16 @@
+/* The agent's permission modes: radio rows, the chosen one on a soft fill. */
+.agent-perm-list { display: flex; flex-direction: column; gap: 2px; }
+.agent-perm-option { display: grid; grid-template-columns: 20px 1fr; gap: 2px 10px; padding: 11px 12px; border-radius: 12px; transition: background-color .15s; }
+.agent-perm-option:hover { background: color-mix(in srgb, var(--foreground) 4%, transparent); }
+.agent-perm-option[data-checked] { background: var(--fill); }
+.agent-perm-option > label { display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+.agent-perm-option strong { font-size: 13px; font-weight: 600; }
+.agent-perm-option label span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.agent-perm-radio { display: grid; place-items: center; width: 20px; height: 20px; border: 1.5px solid color-mix(in srgb, var(--foreground) 30%, var(--border)); border-radius: 50%; background: transparent; cursor: pointer; transition: border-color .15s, background-color .15s, scale .4s var(--spring); }
+.agent-perm-radio:hover:not(:disabled) { border-color: var(--accent); }
+.agent-perm-radio:active:not(:disabled) { scale: .88; transition-duration: .1s; transition-timing-function: ease-out; }
+.agent-perm-radio[data-state="checked"] { border-color: var(--accent); background: var(--accent); }
+.agent-perm-radio:disabled { cursor: default; opacity: .45; }
+.agent-perm-dot { display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--on-accent); animation: agent-perm-dot .32s var(--spring); }
+@keyframes agent-perm-dot { from { scale: 0; } }
+.agent-perm-limit { grid-column: 2; margin-top: 8px; }

@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD `caption_style` text DEFAULT 'pop' NOT NULL;

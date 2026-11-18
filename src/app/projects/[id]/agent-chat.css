@@ -1,0 +1,224 @@
+/*
+ * The agent's chat: where to start, what the agent is doing, what it did, what to press next.
+ * One rule runs through it: whatever the user pressed answers at once (it sinks, it says it is on its way)
+ * and whatever went wrong says why, right where it happened.
+ */
+.pro-assistant-messages { position: relative; }
+/* Cards in the scrolling message column keep their height (a flex column would squeeze them to a line). */
+.pro-assistant-messages > .chat-card, .pro-assistant-messages > .pro-message, .pro-assistant-messages > .chat-working, .pro-assistant-messages > .chat-notice { flex: none; }
+
+/* ---- Where to start ----------------------------------------------------- */
+/* Three ways in, as a grouped list: a tinted symbol, what you get, and what it takes. */
+.chat-starters { display: flex; align-self: stretch; flex-direction: column; overflow: hidden; margin-bottom: 12px; border-radius: 14px; background: var(--surface); text-align: left; }
+.chat-starters li + li::before { content: ""; display: block; height: 1px; margin-left: 52px; background: color-mix(in srgb, var(--foreground) 9%, transparent); }
+.chat-starters button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; text-align: left; transition: background-color .15s; }
+.chat-starters button:hover:not(:disabled) { background: var(--fill); }
+.chat-starters button:active:not(:disabled) { background: var(--fill-strong); transition-duration: 0s; }
+.chat-starters button:disabled { opacity: .45; }
+.chat-starters button:focus-visible { outline-offset: -3px; border-radius: 14px; }
+.chat-starters button > span:first-child { display: grid; flex: none; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--tint); }
+.chat-starters button > span:first-child svg { width: 15px; height: 15px; }
+.chat-starters button > span:last-child { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.chat-starters strong { font-size: 13px; font-weight: 550; line-height: 1.3; }
+.chat-starters small { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.pro-assistant-intro > small { max-width: 250px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+
+/* ---- The turn in progress ----------------------------------------------- */
+/* Who is working, the step it is on (the one thing to read, on the card's full width), the last ones it finished. */
+.chat-working { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 16px; background: var(--surface); }
+.chat-working > header { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11.5px; font-weight: 550; }
+.chat-working > header .pro-spinner { color: var(--accent); }
+.chat-working > strong { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: 13px; font-weight: 600; letter-spacing: -.005em; line-height: 1.4; overflow-wrap: anywhere; }
+.chat-working > ul { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+.chat-working li { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--muted); font-size: 11.5px; }
+.chat-working li > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-working li svg { flex: none; width: 12px; height: 12px; color: var(--success); }
+.chat-working li:not([data-ok]), .chat-working li:not([data-ok]) svg { color: var(--danger); }
+.chat-working > em { margin-top: 2px; color: var(--muted); font-size: 11.5px; font-style: normal; line-height: 1.45; }
+/* What Claude Code or Codex is writing right now, before its turn ends. */
+.chat-live-text > p { color: color-mix(in srgb, var(--foreground) 82%, transparent); }
+
+/* ---- What the agent did ------------------------------------------------- */
+/* One quiet line under the reply: what it did, folded, and on the right the way back. */
+.chat-turn-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 6px; }
+.chat-did { flex: 1; min-width: 0; }
+.chat-did > summary { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-height: 26px; color: var(--muted); font-size: 11.5px; line-height: 1.4; cursor: pointer; }
+.chat-did > summary:hover { color: var(--foreground); }
+.chat-did > summary svg { flex: none; width: 12px; height: 12px; transition: rotate .3s var(--spring); }
+.chat-did[open] > summary svg { rotate: 90deg; }
+.chat-did > summary b { color: var(--danger); font-weight: 550; }
+.chat-did > .chat-actions { margin: 2px 0 4px 16px; }
+.chat-did > .chat-own-steps { margin: 6px 0 4px 16px; }
+.chat-actions li i { color: var(--subtle); font-style: normal; }
+.chat-actions { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.chat-actions li { display: flex; align-items: flex-start; gap: 6px; color: var(--danger); font-size: 11.5px; line-height: 1.45; }
+.chat-actions li[data-ok] { color: var(--muted); }
+.chat-actions svg { flex: none; width: 12px; height: 12px; margin-top: 2.5px; }
+.chat-actions li[data-ok] svg { color: var(--success); }
+.chat-actions li > span { min-width: 0; overflow-wrap: anywhere; }
+/* Why a step did not work, under it. */
+.chat-actions li small { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; margin-top: 1px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+/* The agent's own steps, folded under the studio's changes: the chevron says there is more. */
+.chat-own-steps { margin-top: 6px; }
+.chat-own-steps > summary { display: flex; align-items: flex-start; gap: 4px; color: var(--muted); font-size: 11.5px; line-height: 1.45; cursor: pointer; }
+.chat-own-steps > summary:hover { color: var(--foreground); }
+.chat-own-steps > summary svg { flex: none; width: 12px; height: 12px; margin-top: 2.5px; transition: rotate .3s var(--spring); }
+.chat-own-steps[open] > summary svg { rotate: 90deg; }
+.chat-own-steps > .chat-actions { margin: 4px 0 0 16px; }
+
+/* Undo and retry, on the reply they belong to. Undo is there when wanted, not asking to be pressed. */
+.chat-turn-actions { display: flex; flex: none; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.chat-turn-actions button { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border-radius: 99px; color: var(--muted); font-size: 11.5px; font-weight: 500; transition: background-color .15s, color .15s, filter .15s, scale .4s var(--spring); }
+.chat-turn-actions button:hover:not(:disabled):not([data-primary]) { background: var(--fill); color: var(--foreground); }
+.chat-turn-actions button:active:not(:disabled) { scale: .96; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-turn-actions button[data-primary] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+.chat-turn-actions button[data-primary]:hover:not(:disabled) { filter: brightness(1.1); }
+.chat-turn-actions button:disabled { opacity: .45; }
+.chat-turn-actions svg { width: 12px; height: 12px; }
+
+/* Next steps: grey capsules with a tinted label, the suggested one filled with the tint. A long one wraps instead of running out of its capsule. */
+.chat-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chat-suggestions button { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-height: 32px; padding: 6px 13px; border-radius: 16px; background: var(--fill); color: var(--tint); font-size: 12.5px; font-weight: 500; line-height: 1.3; text-align: left; transition: background-color .15s, filter .15s, opacity .15s, scale .4s var(--spring); }
+.chat-suggestions button > span:not(.pro-spinner) { min-width: 0; overflow-wrap: anywhere; }
+.chat-suggestions button > i { flex: none; font-style: normal; opacity: .7; }
+.chat-suggestions button:hover:not(:disabled):not([data-primary]) { background: var(--fill-strong); }
+.chat-suggestions button:active:not(:disabled) { scale: .96; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-suggestions button[data-primary] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+.chat-suggestions button[data-primary]:hover:not(:disabled) { filter: brightness(1.1); }
+.chat-suggestions button:disabled { opacity: .45; }
+/* The one that was pressed stays lit while it runs. */
+.chat-suggestions button[data-waiting]:disabled { opacity: 1; }
+.chat-suggestions svg { flex: none; width: 12px; height: 12px; opacity: .8; }
+
+/* ---- Cards -------------------------------------------------------------- */
+.chat-card { margin-top: 10px; overflow: hidden; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-strong); }
+.chat-card > header { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.chat-card > header svg { width: 15px; height: 15px; color: var(--muted); }
+.chat-card > header strong { font-size: 13px; font-weight: 600; }
+.chat-card > header span { margin-left: auto; color: var(--muted); font-size: 11.5px; }
+
+.chat-script ol { max-height: 260px; overflow-y: auto; scrollbar-width: thin; }
+.chat-script li { display: flex; gap: 10px; padding: 9px 12px; border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent); }
+.chat-script li > span { padding-top: 1px; color: var(--muted); font: 11px var(--font-geist-mono), monospace; }
+.chat-script li strong { display: block; font-size: 12.5px; font-weight: 550; }
+.chat-script li p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; margin-top: 1px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.chat-script > button, .chat-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; padding: 10px 12px; color: var(--tint); font-size: 12.5px; font-weight: 550; text-align: left; transition: background-color .15s; }
+.chat-script > button:hover, .chat-link:hover { background: var(--fill); }
+.chat-script > button:active, .chat-link:active { background: var(--fill-strong); transition-duration: 0s; }
+.chat-script > button svg, .chat-link svg { flex: none; width: 14px; height: 14px; opacity: .7; }
+.chat-script > button:focus-visible, .chat-link:focus-visible { outline-offset: -3px; border-radius: 14px; }
+.chat-link { border-top: 1px solid var(--border); font-weight: 500; }
+
+/* The guide: four steps on a line that fills with the tint as they are done. */
+.chat-guide { margin-top: 2px; }
+.chat-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 14px 8px 4px; }
+.chat-steps li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; text-align: center; }
+.chat-steps li + li::before { content: ""; position: absolute; top: 11px; right: calc(50% + 16px); left: calc(-50% + 16px); height: 2px; border-radius: 2px; background: var(--fill-strong); }
+.chat-steps li[data-state="done"] + li::before { background: var(--accent); }
+.chat-steps li > span { display: grid; place-items: center; width: 24px; height: 24px; border: 1.5px solid color-mix(in srgb, var(--foreground) 16%, transparent); border-radius: 50%; font-size: 11px; font-weight: 600; }
+.chat-steps li > span svg { width: 12px; height: 12px; }
+.chat-steps li[data-state="done"] > span { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+.chat-steps li[data-state="current"] { color: var(--foreground); font-weight: 600; }
+.chat-steps li[data-state="current"] > span { border-color: var(--accent); color: var(--tint); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+.chat-step-body { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+.chat-step-body > p { color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.chat-step-body > small { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+/* Two answers share the row; in a narrow panel each takes its own line, still full width. */
+.chat-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chat-row > button { flex: 1 1 auto; }
+.chat-primary, .chat-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 6px 15px; border-radius: 99px; font-size: 12.5px; font-weight: 600; line-height: 1.25; text-align: center; transition: background-color .15s, filter .15s, opacity .15s, scale .4s var(--spring); }
+.chat-primary:active:not(:disabled), .chat-secondary:active:not(:disabled) { scale: .96; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-primary { background: var(--accent); color: var(--on-accent); }
+.chat-primary:hover:not(:disabled) { filter: brightness(1.1); }
+.chat-primary:active:not(:disabled) { filter: brightness(.92); }
+.chat-primary:disabled { background: var(--fill); color: var(--muted); }
+.chat-secondary { background: var(--fill); color: var(--tint); }
+.chat-secondary:hover:not(:disabled) { background: var(--fill-strong); }
+.chat-secondary:disabled { opacity: .45; }
+.chat-progress > div { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 7px; font-size: 12.5px; }
+.chat-progress > div span { color: var(--muted); font: 12px var(--font-geist-mono), monospace; }
+.chat-progress i { display: block; height: 4px; overflow: hidden; border-radius: 99px; background: var(--fill-strong); }
+.chat-progress b { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width .4s ease; }
+.chat-error { color: var(--danger); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+
+/* A permission question from Claude Code or Codex: what exactly, what it means, and the answer. */
+.chat-approval { padding-bottom: 12px; border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.chat-approval > header { flex-direction: column; align-items: flex-start; gap: 2px; }
+.chat-approval > header span { margin-left: 0; overflow-wrap: anywhere; }
+.chat-approval > pre { max-height: 140px; margin: 10px 12px 0; padding: 8px 10px; overflow: auto; border-radius: 10px; background: var(--fill); font: 11.5px/1.5 var(--font-geist-mono), monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-approval > p:not(.chat-error) { margin: 10px 12px 0; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+.chat-approval > .chat-error { margin: 10px 12px 0; }
+/* The safe answer and the one that goes ahead, side by side and the same size. */
+.chat-approval > .chat-row { display: grid; grid-template-columns: 1fr 1fr; margin: 12px 12px 0; }
+.chat-approval-all { display: block; width: 100%; padding: 10px 12px 0; color: var(--tint); font-size: 12px; text-align: center; transition: opacity .15s; }
+.chat-approval-all:hover:not(:disabled) { opacity: .75; }
+.chat-approval-all:disabled { opacity: .45; }
+
+/* ---- Notices ------------------------------------------------------------ */
+/* Something the user pressed did not work: what, in a banner that can be put away. */
+.chat-notice { display: flex; align-items: flex-start; gap: 8px; padding: 10px 8px 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--danger) 10%, transparent); color: var(--danger); font-size: 12px; line-height: 1.5; }
+.chat-notice > p { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.chat-notice > button { display: grid; flex: none; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: inherit; transition: background-color .15s; }
+.chat-notice > button:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.chat-notice svg { width: 12px; height: 12px; }
+/* Back to the end of the conversation, once the user has scrolled away from it. It floats over the messages and takes no room. */
+.chat-jump { position: sticky; bottom: 0; z-index: 2; display: flex; flex: none; justify-content: center; height: 0; pointer-events: none; }
+.chat-jump > button { display: grid; place-items: center; width: 32px; height: 32px; translate: 0 -100%; border-radius: 50%; background: var(--material-thick); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); box-shadow: var(--shadow-pop); color: var(--foreground); pointer-events: auto; animation: chat-jump-in .35s var(--spring); transition: scale .4s var(--spring); }
+.chat-jump > button:active { scale: .9; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-jump svg { width: 15px; height: 15px; rotate: 180deg; }
+@keyframes chat-jump-in { from { opacity: 0; scale: .6; } }
+
+/* ---- The message box ---------------------------------------------------- */
+/* It grows with what is written, up to a point, instead of scrolling three lines. */
+@supports (field-sizing: content) {
+  .pro-assistant .pro-assistant-composer textarea { field-sizing: content; min-height: 42px; max-height: 168px; }
+}
+.pro-assistant-composer > .pro-context-chip { background: color-mix(in srgb, var(--accent) 13%, transparent); color: var(--tint); font-weight: 500; }
+/* Requests that make sense right now, while the box is empty: a tap writes one. */
+.pro-assistant-composer > .chat-ideas { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 5px; margin: 0 0 8px -4px; }
+.chat-ideas button { height: 26px; padding: 0 10px; border-radius: 99px; background: var(--fill); color: var(--tint); font-size: 11.5px; font-weight: 500; white-space: nowrap; transition: background-color .15s, scale .4s var(--spring); }
+.chat-ideas button:hover { background: var(--fill-strong); }
+.chat-ideas button:active { scale: .95; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-attach { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border-radius: 50%; color: var(--muted); transition: background-color .15s, color .15s, scale .4s var(--spring); }
+.chat-attach:hover:not(:disabled) { background: var(--fill); color: var(--foreground); }
+.chat-attach:active:not(:disabled) { scale: .9; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-attach svg { width: 16px; height: 16px; }
+/* The model and the permissions are settings, not actions: plain grey labels that only take a plate when touched, so the row reads «write, send». They shorten with an ellipsis in a narrow panel. */
+.chat-permissions { display: inline-flex; align-items: center; gap: 5px; height: 30px; min-width: 0; margin-right: auto; padding: 0 8px; border-radius: 99px; color: var(--muted); font-size: 11.5px; font-weight: 500; white-space: nowrap; transition: background-color .15s, color .15s; }
+.chat-permissions:hover, .chat-permissions[data-state="open"] { background: var(--fill); color: var(--foreground); }
+.pro-assistant-composer .model-picker-trigger { height: 30px; padding: 0 8px; background: transparent; color: var(--muted); font-size: 11.5px; transition: background-color .15s, color .15s; }
+.pro-assistant-composer .model-picker-trigger:hover:not(:disabled), .pro-assistant-composer .model-picker-trigger[data-state="open"] { background: var(--fill); color: var(--foreground); }
+.pro-assistant-composer .model-picker-trigger > svg:first-child { color: currentColor; opacity: .8; }
+.pro-assistant-composer > div:last-child { gap: 2px; }
+.pro-assistant-composer > div:last-child > .pro-send, .pro-assistant-composer > div:last-child > .chat-stop { margin-left: 6px; }
+.chat-permissions > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.chat-permissions svg { flex: none; color: var(--muted); transition: transform .4s var(--spring); }
+.chat-permissions[data-state="open"] svg { transform: rotate(180deg); }
+.chat-permissions-pop { z-index: 60; width: min(360px, calc(100vw - 24px)); max-height: min(640px, calc(100vh - 96px)); overflow-y: auto; padding: 16px; border-radius: 18px; }
+.chat-permissions-pop h3 { font-size: 14px; font-weight: 600; }
+.chat-permissions-pop > p { margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
+.chat-permissions-pop > p a { color: var(--tint); }
+.chat-permissions-pop > p.chat-error { margin: 0 0 10px; color: var(--danger); }
+.chat-permissions-pop .agent-perm-list { margin: 0 -6px 12px; }
+.chat-permissions-pop > .chat-primary { width: 100%; }
+/* «Detener» takes the send button's place while the agent works: ink, so it is the one thing that stands out in a box that is otherwise waiting. */
+.chat-stop { display: inline-flex; flex: none; align-items: center; gap: 7px; height: 30px; padding: 0 13px 0 11px; border-radius: 99px; background: var(--foreground); color: var(--background); font-size: 12px; font-weight: 600; white-space: nowrap; transition: opacity .15s, scale .4s var(--spring); }
+.chat-stop > i { display: block; width: 9px; height: 9px; border-radius: 2.5px; background: currentColor; }
+.chat-stop:hover:not(:disabled) { opacity: .85; }
+.chat-stop:active:not(:disabled) { scale: .95; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-stop:disabled { opacity: .6; cursor: default; }
+
+/* The chosen engine (Ajustes › Agente) cannot run: what is missing and the ways out (check again, switch to a ready engine, open Ajustes), above the message box. */
+/* The banner is a direct child of the composer, whose > div rule lays out the bottom row: undo that here. */
+.pro-assistant-composer > .chat-engine-problem { display: block; margin: 0 0 10px; }
+.chat-engine-problem { padding: 9px 11px; border-radius: 12px; background: color-mix(in srgb, var(--danger) 9%, transparent); color: var(--danger); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.chat-engine-problem > p { margin: 0; }
+.chat-engine-problem strong { font-weight: 600; }
+.chat-engine-problem a { color: inherit; font-weight: 550; text-decoration: underline; text-underline-offset: 2px; }
+.chat-engine-problem > div { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+.chat-engine-problem button { height: 26px; padding: 0 11px; border-radius: 99px; background: var(--surface-strong); color: var(--foreground); font-size: 11.5px; font-weight: 550; white-space: nowrap; transition: opacity .15s, scale .4s var(--spring); }
+.chat-engine-problem button:hover:not(:disabled) { opacity: .8; }
+.chat-engine-problem button:active:not(:disabled) { scale: .95; transition-duration: .1s; transition-timing-function: ease-out; }
+.chat-engine-problem button:disabled { opacity: .6; cursor: default; }
+.chat-engine-problem > div > a { margin-left: 2px; font-size: 11.5px; }
+.chat-engine-problem small { display: block; margin-top: 6px; font-size: 11.5px; }

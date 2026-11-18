@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD `preset` text DEFAULT 'viral' NOT NULL;

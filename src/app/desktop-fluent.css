@@ -1,0 +1,29 @@
+/* The native window: its own title bar, the system font stack as fallback and the system accent. */
+html[data-desktop="true"] {
+  --titlebar-height: 32px;
+  /* DesktopChrome sets --accent to the system colour; text over it follows. */
+  --on-accent: var(--system-on-accent, #ffffff);
+}
+html[data-desktop="true"][data-backdrop="mica"] { background: transparent; }
+html[data-desktop="true"] body { padding-top: var(--titlebar-height); }
+html[data-desktop="true"][data-backdrop="mica"] body { background: transparent; }
+html[data-desktop="true"] ::selection { color: HighlightText; background: Highlight; }
+
+.desktop-titlebar { position: fixed; inset: 0 0 auto; z-index: 100; height: var(--titlebar-height); display: flex; align-items: stretch; user-select: none; background: var(--material); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); color: var(--foreground); box-shadow: 0 .5px 0 var(--border); }
+html[data-backdrop="mica"] .desktop-titlebar { background: color-mix(in srgb, var(--surface) 72%, transparent); }
+.desktop-title { flex: 1; display: flex; align-items: center; gap: 8px; padding-left: 12px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.desktop-titlebar button { display: grid; place-items: center; flex: none; width: 46px; height: 32px; border: 0; border-radius: 0; background: transparent; color: inherit; cursor: default; }
+.desktop-titlebar button:hover { background: color-mix(in srgb, var(--foreground) 8%, transparent); }
+.desktop-titlebar button:active { background: color-mix(in srgb, var(--foreground) 12%, transparent); }
+.desktop-titlebar button:disabled { opacity: .45; }
+.desktop-titlebar .desktop-close:hover { background: #c42b1c; color: #fff; }
+.desktop-titlebar .desktop-close:active { background: #a8271b; }
+.desktop-titlebar svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1; }
+.desktop-titlebar .desktop-settings { font-size: 15px; }
+.desktop-error { position: fixed; top: 40px; right: 16px; z-index: 110; padding: 12px 14px; font-size: 12px; color: var(--danger); background: var(--material-thick); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); border-radius: 16px; box-shadow: var(--shadow-pop); }
+.desktop-error button { margin-left: 16px; color: var(--tint); font-weight: 550; }
+
+@media (forced-colors: active) {
+  html[data-desktop="true"] * { box-shadow: none !important; text-shadow: none !important; backdrop-filter: none !important; }
+  html[data-desktop="true"] :is(button, input, select, textarea) { border: 1px solid ButtonText; }
+}

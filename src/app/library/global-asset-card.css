@@ -1,0 +1,26 @@
+/*
+ * Global library cards, on top of asset-card.css. The origin is told in the line under the name, not with
+ * coloured stickers on the cover: the picture stays the loudest thing on the card.
+ */
+
+/* The whole cover opens the preview (library page). It sits under the badges and the hover tools. */
+.global-asset-card .pro-asset-preview > .global-asset-open { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border-radius: inherit; background: none; cursor: pointer; opacity: 1; box-shadow: none; }
+.global-asset-card .pro-asset-preview > .global-asset-open:hover:not(:disabled) { background: none; }
+.global-asset-card .pro-asset-preview > .global-asset-open:focus-visible { outline-offset: -2px; }
+/* The live preview plays over the cover but lets the click through to it. */
+.global-asset-card .asset-card-live,
+.global-asset-card .asset-card-badge { pointer-events: none; }
+
+/*
+ * Selection, as in Photos: an empty ring on every cover, filled with the tint and a check once picked; the
+ * picked cover draws in a little and wears a tinted ring. The hover tools step aside while selecting.
+ */
+.global-asset-card.is-selecting .asset-card-tools { display: none; }
+.global-asset-card.is-selecting .pro-asset-preview { transition: scale .45s var(--spring), box-shadow .2s ease; }
+.global-asset-card.is-selected .pro-asset-preview { scale: .95; box-shadow: 0 0 0 2.5px var(--accent); }
+.global-asset-check { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 22px; height: 22px; border: 1.5px solid #fff; border-radius: 50%; background: rgb(0 0 0 / .25); color: #fff; box-shadow: 0 1px 4px rgb(0 0 0 / .3); pointer-events: none; transition: background-color .15s, border-color .15s, scale .4s var(--spring-bounce); }
+.global-asset-card.is-selected .global-asset-check { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+.global-asset-check svg { width: 13px; height: 13px; }
+
+/* Same look as the home's "Vídeo listo" badge, from the system green. */
+.pro-asset-preview > .global-in-project-badge { position: absolute; top: auto; right: 8px; bottom: 8px; left: auto; display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 99px; background: color-mix(in srgb, var(--success) 88%, transparent); color: #fff; font-family: inherit; font-size: 10.5px; font-weight: 550; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); pointer-events: none; }

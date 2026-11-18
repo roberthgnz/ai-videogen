@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD `edit` text DEFAULT '{"enabled":false,"revision":0,"duration":15,"background":"#101018","assets":[],"clips":[],"overlays":[],"references":[]}' NOT NULL;

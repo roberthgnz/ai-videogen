@@ -1,0 +1,6 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "local",
+  "windows": ["splash", "settings"],
+  "permissions": ["core:default"]
+}

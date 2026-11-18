@@ -1,0 +1,83 @@
+/*
+ * Editing in passes, in two quiet pieces. Above the chat, one line: the steps this video needs and a menu (steps,
+ * review mode, saved versions). Right above the message box, the next step: one sentence and the buttons that answer it.
+ */
+.passes-strip { display: flex; flex: none; flex-direction: column; gap: 8px; max-height: 58%; padding: 8px 8px 8px 12px; overflow: hidden; border-bottom: 1px solid var(--border); }
+.passes-strip-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px; }
+.passes-more { width: 28px; height: 28px; color: var(--muted); letter-spacing: .05em; }
+.passes-menu { max-width: min(320px, calc(100vw - 24px)); }
+.passes-menu small { color: var(--muted); }
+.passes-menu-mode { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.passes-menu-mode strong { font-weight: 500; }
+.passes-menu-mode small { font-size: 11.5px; line-height: 1.4; white-space: normal; }
+.passes-strip > .passes-error, .passes-strip > .passes-notice { padding-right: 4px; }
+.passes-menu-label { padding: 6px 12px 2px; color: var(--muted); font-size: 11px; font-weight: 550; }
+
+/* ---- The steps this video needs ----------------------------------------- */
+/* Done steps read as done, the current one is the only one with a plate, the rest wait in grey. */
+/* Each step takes the room its name needs and they share what is left: in a narrow panel the names shorten together, the current one last. */
+.passes-steps { display: flex; gap: 2px; min-width: 0; }
+/* Before the agent (or the user) picks the steps, and when the video needs none. */
+.passes-steps-empty { min-width: 0; padding: 0 4px; overflow: hidden; color: var(--muted); font-size: 11.5px; line-height: 28px; text-overflow: ellipsis; white-space: nowrap; }
+.passes-steps li { display: flex; flex: 1 1 auto; align-items: center; gap: 4px; min-width: 0; height: 28px; padding: 0 4px; border-radius: 8px; color: var(--muted); font-size: 11.5px; }
+.passes-steps li[aria-current="step"] { flex-shrink: 0; }
+.passes-steps li > span:not(.sr-only) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.passes-steps li > i { display: grid; flex: none; place-items: center; width: 14px; height: 14px; border: 1.5px solid color-mix(in srgb, currentColor 55%, transparent); border-radius: 50%; }
+.passes-steps li > i svg { width: 9px; height: 9px; stroke-width: 3; }
+.passes-steps li > i .pro-spinner { width: 10px; height: 10px; border-width: 1.5px; }
+.passes-steps li[aria-current="step"] { background: var(--fill); color: var(--foreground); font-weight: 550; }
+.passes-steps li[data-status="approved"] { color: var(--foreground); }
+.passes-steps li[data-status="approved"] > i { border-color: var(--success); background: var(--success); color: #fff; }
+.passes-steps li[data-status="review"] > i { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.passes-steps li[data-status="working"] > i { border-color: var(--accent); border-style: dashed; color: var(--accent); }
+.passes-steps li[data-status="working"] > i:has(.pro-spinner) { border: 0; }
+
+/* ---- The next step, above the message box -------------------------------- */
+.passes-now { display: flex; flex: none; flex-direction: column; gap: 9px; margin: 0 14px 10px; padding: 12px 14px; border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--border)); border-radius: 16px; background: color-mix(in srgb, var(--accent) 6%, var(--surface-strong)); }
+.passes-now > p { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.passes-now > p > strong { display: block; margin-bottom: 1px; color: var(--foreground); font-size: 13px; font-weight: 600; letter-spacing: -.005em; }
+/* What the agent said it changed: one line until the user wants to read it. */
+.passes-notes > summary { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 11.5px; cursor: pointer; }
+.passes-notes > summary:hover { color: var(--foreground); }
+.passes-notes > summary svg { flex: none; width: 12px; height: 12px; transition: rotate .3s var(--spring); }
+.passes-notes[open] > summary svg { rotate: 90deg; }
+.passes-notes blockquote { max-height: 132px; margin-top: 6px; padding: 7px 10px; overflow-y: auto; border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0; background: var(--surface); color: color-mix(in srgb, var(--foreground) 85%, transparent); font-size: 11.5px; line-height: 1.5; scrollbar-width: thin; }
+.passes-notes blockquote b { font-weight: 600; }
+.passes-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.passes-hint { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+.passes-notice { color: var(--success); font-size: 11.5px; line-height: 1.45; }
+.passes-error { color: var(--danger); font-size: 11.5px; line-height: 1.45; }
+
+/* ---- Versions ------------------------------------------------------------ */
+.passes-versions { display: flex; flex-direction: column; gap: 8px; min-height: 0; padding: 8px 4px 4px 0; border-top: 1px solid var(--border); }
+.passes-versions > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.passes-versions > header strong { font-size: 12.5px; font-weight: 600; }
+.passes-versions > header svg { width: 13px; height: 13px; }
+.passes-versions > form { display: flex; gap: 6px; }
+.passes-versions > form input { height: 32px; font-size: 12px; }
+.passes-versions > ul { display: flex; flex-direction: column; min-height: 0; overflow: auto; margin: 0 -4px; }
+.passes-versions li { display: flex; align-items: center; gap: 8px; padding: 7px 4px; border-top: 1px solid color-mix(in srgb, var(--foreground) 7%, transparent); }
+.passes-versions li:first-child { border-top: 0; }
+.passes-versions li > div { display: flex; flex: 1; flex-direction: column; gap: 1px; min-width: 0; }
+.passes-versions li strong { overflow: hidden; font-size: 12.5px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.passes-versions li small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.passes-versions li[data-kind="approved"] small > span { color: var(--success); font-weight: 550; }
+.passes-versions li[data-kind="review"] strong, .passes-versions li[data-kind="backup"] strong { font-weight: 500; }
+.passes-current { flex: none; color: var(--muted); font-size: 11px; }
+.passes-versions li > button:last-child { flex: none; color: var(--muted); letter-spacing: .05em; }
+.passes-rename { display: flex; flex: 1; align-items: center; gap: 6px; min-width: 0; }
+.passes-rename input { height: 32px; min-width: 0; font-size: 12px; }
+.passes-empty { color: var(--muted); font-size: 12px; }
+
+/* ---- In the top bar ------------------------------------------------------ */
+.passes-chip { display: inline-flex; flex: none; align-items: center; gap: 6px; max-width: 240px; height: 26px; padding: 0 10px; border-radius: 99px; background: var(--fill); color: var(--muted); font-size: 11.5px; transition: background-color .15s; }
+.passes-chip:hover { background: var(--fill-strong); }
+.passes-chip > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.passes-chip strong { color: var(--foreground); font-weight: 550; }
+.passes-chip > i { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.passes-chip[data-status="review"] > i { background: var(--accent); }
+.passes-chip[data-status="working"] > i { background: var(--accent); animation: passes-pulse 1.2s ease-in-out infinite; }
+.passes-chip[data-status="approved"] > i { background: var(--success); }
+@keyframes passes-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .passes-chip[data-status="working"] > i { animation: none; } }
+@media (max-width: 899px) { .passes-chip { display: none; } }

@@ -1,0 +1,52 @@
+/* Ajustes, as the iOS Settings app: a grey page, one inset grouped card per section with hairlines between its rows, a save bar that appears with changes. */
+.home:has(.settings) { background: var(--grouped); }
+/* A section picked in the sidebar glides into place instead of jumping (not for whoever asks for less motion: globals.css). */
+html:has(.settings) { scroll-behavior: smooth; }
+.settings-loading { padding: 40px 24px; color: var(--muted); font-size: 13px; }
+.settings { display: grid; grid-template-columns: 200px minmax(0, 720px); gap: 48px; width: 100%; max-width: 1020px; margin: 0 auto; padding: 32px 24px 120px; }
+.settings-nav { position: sticky; top: calc(var(--titlebar-height, 0px) + 80px); display: flex; flex-direction: column; gap: 2px; align-self: start; }
+.settings-nav h1 { margin: 0 0 14px 10px; font-size: 28px; font-weight: 700; letter-spacing: -.025em; line-height: 1.15; }
+/* A sidebar, as in the iPad's Settings: the section on screen is the filled row. */
+.settings-nav a { padding: 7px 10px; border-radius: 10px; color: var(--foreground); font-size: 13.5px; transition: background-color .2s, color .2s; }
+.settings-nav a:hover:not([aria-current]) { background: var(--fill); }
+.settings-nav a:active { background: var(--fill-strong); transition-duration: 0s; }
+.settings-nav a[aria-current] { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--tint); font-weight: 600; }
+.settings-body { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.settings-card { scroll-margin-top: calc(var(--titlebar-height, 0px) + 72px); padding: 20px 22px 22px; border-radius: 18px; background: var(--surface-strong); }
+.settings-card > header { margin-bottom: 14px; }
+.settings-card h2 { font-size: 17px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
+.settings-card > header p { margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.5; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 0; border-top: 1px solid var(--border); }
+.settings-row > div:first-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.settings-row strong { font-size: 13.5px; font-weight: 550; }
+.settings-row > div:first-child > span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.settings-select { width: 240px !important; flex: none; }
+.settings-input { width: 240px; flex: none; }
+.settings-control-wide { flex: none; width: 320px; }
+.settings-quality { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.settings-services { display: flex; flex-direction: column; margin-bottom: 14px; }
+.settings-services li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+.settings-services li > div { display: flex; flex: 1; flex-direction: column; }
+.settings-services strong { font-size: 13.5px; font-weight: 550; }
+.settings-services li span:not(.settings-status) { color: var(--muted); font-size: 12px; }
+.settings-services em { color: var(--muted); font-size: 12px; font-style: normal; }
+.settings-status { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 15%, transparent); }
+.settings-status.is-ready { background: var(--switch-on); box-shadow: 0 0 0 3px color-mix(in srgb, var(--switch-on) 18%, transparent); }
+.settings-note { margin-top: 14px; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.settings-note code { font: 11.5px var(--font-geist-mono), monospace; color: var(--foreground); }
+/* It rises from the bottom edge on a spring and leaves the way it came. */
+.settings-savebar { position: fixed; bottom: 20px; left: 50%; z-index: 40; display: flex; align-items: center; gap: 8px; transform: translate(-50%, 140%); padding: 8px 8px 8px 18px; border-radius: 99px; background: var(--material-thick); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); box-shadow: var(--shadow-pop); font-size: 13px; font-weight: 500; opacity: 0; transition: transform .5s var(--spring), opacity .2s; }
+.settings-savebar button { border-radius: 99px; }
+.settings-savebar[data-visible] { transform: translate(-50%, 0); opacity: 1; }
+.settings-savebar > span { margin-right: 8px; white-space: nowrap; }
+@media (max-width: 760px) {
+  .settings { grid-template-columns: 1fr; gap: 16px; padding: 16px 16px 120px; }
+  .settings-nav { position: static; flex-direction: row; flex-wrap: wrap; }
+  .settings-nav h1 { width: 100%; margin-left: 0; }
+  .settings-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .settings-select, .settings-input, .settings-control-wide { width: 100% !important; }
+  .settings-quality { grid-template-columns: 1fr; }
+  .settings-savebar { right: 16px; left: 16px; transform: translateY(140%); justify-content: flex-end; border-radius: 22px; }
+  .settings-savebar[data-visible] { transform: none; }
+  .settings-savebar > span { white-space: normal; }
+}

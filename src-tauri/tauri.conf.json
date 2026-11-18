@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "VideoGen",
+  "version": "0.1.0",
+  "identifier": "com.videogen.desktop",
+  "build": {
+    "beforeDevCommand": "node scripts/desktop/prepare.mjs",
+    "beforeBuildCommand": "node scripts/desktop/prepare.mjs",
+    "frontendDist": "ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [{ "label": "splash", "title": "VideoGen", "url": "splash.html", "width": 420, "height": 240, "resizable": false, "decorations": false, "center": true, "dragDropEnabled": false }],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src ipc: http://ipc.localhost; img-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "resources": { "resources/": "desktop/" },
+    "externalBin": ["binaries/videogen-node"],
+    "windows": { "webviewInstallMode": { "type": "embedBootstrapper", "silent": true }, "nsis": { "installMode": "currentUser", "displayLanguageSelector": false, "languages": ["English", "Spanish"] } }
+  }
+}

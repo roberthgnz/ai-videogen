@@ -1,0 +1,738 @@
+@layer ui-sdk;
+@import "tailwindcss";
+@import "@ui-sdk/core/web.css" layer(components);
+@import "./desktop-fluent.css";
+
+@layer components {
+  .ui-tooltip-trigger {
+    all: revert-layer;
+  }
+
+  .ui-button:is([data-slot="button"], [data-slot="toggle"], [data-slot="tabs-tab"]),
+  .ui-toggle-group [data-slot="toggle"] {
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .ui-button:hover:not([data-disabled]),
+  .ui-toggle-group [data-slot="toggle"]:hover:not([data-disabled]) {
+    background: transparent;
+  }
+
+  .ui-toggle-group {
+    padding: 0;
+  }
+
+  .ui-toggle-group [data-slot="toggle"] {
+    margin-inline-start: 0;
+    border-radius: 0;
+  }
+
+  .ui-tabs-list {
+    border: 0;
+  }
+}
+
+@font-face {
+  font-family: "VideoGenCanvas";
+  src: url("/fonts/editor-inter-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+/*
+ * App UI: the iOS system look, so the video is the only loud thing on screen.
+ * One set of tokens drives the home page, the studio and every floating surface: system colours,
+ * translucent materials for what floats, one tint for what can be tapped, springs for what moves.
+ * (The video's own theme lives in src/theme.ts.)
+ */
+:root {
+  --ui-background: var(--surface-strong);
+  --ui-foreground: var(--foreground);
+  --ui-muted: var(--fill);
+  --ui-muted-foreground: var(--muted);
+  --ui-border: var(--border);
+  --ui-input: var(--border);
+  --ui-primary: var(--accent);
+  --ui-primary-foreground: var(--on-accent);
+  --ui-destructive: var(--danger);
+  --ui-ring: var(--accent);
+  --ui-ring-border: var(--accent);
+  --ui-overlay: var(--scrim);
+  --ui-shadow: var(--shadow-pop);
+  --ui-radius: var(--radius);
+  --ui-font-sans: var(--font-sans);
+  /* systemBackground, and the tinted ground things are inset into (tracks, thumbnails, search fields). */
+  --background: #ffffff;
+  --surface: #f2f2f7;
+  /* Elevated: cards, composers, dialogs. */
+  --surface-strong: #ffffff;
+  /* Something lifted off a tinted track: the chosen segment of a segmented control. */
+  --raised: #ffffff;
+  /* The page behind inset grouped cards (Ajustes). */
+  --grouped: #f2f2f7;
+  --border: #e3e3e8;
+  --foreground: #000000;
+  --muted: #6e6e73;
+  /* The tint: what can be tapped, what is chosen. The desktop window swaps it for the system colour. */
+  --accent: #007aff;
+  --on-accent: #ffffff;
+  /* The tint as small text: a step darker, so it stays readable on white and on grey fills. */
+  --tint: color-mix(in srgb, var(--accent) 86%, #000);
+  --danger: #d70015;
+  --success: #248a3d;
+  --switch-on: #34c759;
+  /* System fills: translucent greys that tint whatever they sit on (buttons, fields, tracks). */
+  --fill: rgb(120 120 128 / 0.12);
+  --fill-strong: rgb(120 120 128 / 0.2);
+  --scrim: rgb(0 0 0 / 0.3);
+  /* Materials: bars let content scroll under them, menus and dialogs sit thicker. */
+  --material: color-mix(in srgb, var(--surface-strong) 72%, transparent);
+  --material-thick: color-mix(in srgb, var(--surface-strong) 84%, transparent);
+  --material-filter: saturate(180%) blur(24px);
+
+  --radius: 12px;
+  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.06);
+  --shadow-pop: 0 0 0 0.5px rgb(0 0 0 / 0.1), 0 14px 44px rgb(0 0 0 / 0.16), 0 2px 8px rgb(0 0 0 / 0.06);
+
+  /*
+   * Motion. A spring has no duration of its own: these curves are the sampled response of one, so the
+   * time given with them sets how fast it answers (≈ 1.45 × the spring's response).
+   * --spring is critically damped (no overshoot): the default. --spring-bounce (damping 0.8) is only for
+   * things the user threw or dragged. Browsers without linear() get the closest bezier.
+   */
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring-bounce: cubic-bezier(0.3, 1.25, 0.4, 1);
+  /* The sheet curve: fast out of the gate, a long settle. */
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  color-scheme: light;
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring: linear(0, 0.079 5%, 0.236 10%, 0.403 15%, 0.551 20%, 0.671 25%, 0.764 30%, 0.833 35%, 0.883 40%, 0.944 50%, 0.974 60%, 0.988 70%, 0.995 80%, 0.998 90%, 1);
+    --spring-bounce: linear(0, 0.08 5%, 0.249 10%, 0.438 15%, 0.61 20%, 0.749 25%, 0.852 30%, 0.923 35%, 0.969 40%, 0.996 45%, 1.009 50%, 1.015 60%, 1.01 70%, 1.005 80%, 1.002 90%, 1);
+  }
+}
+
+/* Dark counterpart of the same surfaces: chosen in Ajustes (data-theme), or following the system. */
+html[data-theme="dark"] {
+    --background: #000000;
+    --surface: #1c1c1e;
+    --surface-strong: #1c1c1e;
+    --raised: #636366;
+    --grouped: #000000;
+    --border: #38383a;
+    --foreground: #ffffff;
+    --muted: #98989f;
+    --accent: #0a84ff;
+    --on-accent: #ffffff;
+    --tint: color-mix(in srgb, var(--accent) 86%, #fff);
+    --danger: #ff453a;
+    --success: #30d158;
+    --switch-on: #30d158;
+    --fill: rgb(120 120 128 / 0.24);
+    --fill-strong: rgb(120 120 128 / 0.36);
+    --scrim: rgb(0 0 0 / 0.5);
+    --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.4);
+    --shadow-pop: 0 0 0 0.5px rgb(255 255 255 / 0.14), 0 14px 44px rgb(0 0 0 / 0.6), 0 2px 8px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] {
+    --background: #000000;
+    --surface: #1c1c1e;
+    --surface-strong: #1c1c1e;
+    --raised: #636366;
+    --grouped: #000000;
+    --border: #38383a;
+    --foreground: #ffffff;
+    --muted: #98989f;
+    --accent: #0a84ff;
+    --on-accent: #ffffff;
+    --tint: color-mix(in srgb, var(--accent) 86%, #fff);
+    --danger: #ff453a;
+    --success: #30d158;
+    --switch-on: #30d158;
+    --fill: rgb(120 120 128 / 0.24);
+    --fill-strong: rgb(120 120 128 / 0.36);
+    --scrim: rgb(0 0 0 / 0.5);
+    --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.4);
+    --shadow-pop: 0 0 0 0.5px rgb(255 255 255 / 0.14), 0 14px 44px rgb(0 0 0 / 0.6), 0 2px 8px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-raised: var(--raised);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-tint: var(--tint);
+  --color-fill: var(--fill);
+  --color-fill-strong: var(--fill-strong);
+  --color-danger: var(--danger);
+  /* San Francisco where the system has it; Inter, its closest free relative, everywhere else. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-inter), system-ui, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  /* The face changes shape with its size (text cut small, display cut large), as SF does. */
+  font-optical-sizing: auto;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="switch"]:focus-visible,
+[role="radio"]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 75%, transparent);
+  outline-offset: 2px;
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ---- Shared surfaces -------------------------------------------------- */
+
+/* A plain card: project covers, panels inside pages. */
+.glass {
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Suggestion chips: a grey capsule that sinks a little under the finger. */
+.glass-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--foreground);
+  background: var(--fill);
+  transition: background-color 150ms ease, scale 400ms var(--spring);
+  cursor: pointer;
+}
+.glass-chip:hover:not(:disabled) {
+  background: var(--fill-strong);
+}
+.glass-chip:active:not(:disabled) {
+  scale: 0.96;
+  transition-duration: 100ms;
+  transition-timing-function: ease-out;
+}
+.glass-chip:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* Tooltips: inverted ink, so they never blend into the panel under them. */
+.ui-tooltip {
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.2);
+  transform-origin: var(--transform-origin, center);
+}
+.ui-tooltip[data-state="delayed-open"],
+.ui-tooltip[data-state="instant-open"],
+.ui-tooltip[data-open]:not([data-ending-style]) {
+  animation: tip-in 160ms var(--ease-sheet);
+}
+.ui-tooltip .editor-key {
+  border-color: color-mix(in srgb, var(--background) 25%, transparent);
+  background: color-mix(in srgb, var(--background) 12%, transparent);
+  color: color-mix(in srgb, var(--background) 80%, transparent);
+}
+
+/* ---- Controls (src/components/ui) ------------------------------------- */
+
+/*
+ * Buttons answer the press itself, not the release: they sink in 100ms on pointer-down and spring back
+ * when let go. `scale` (not transform) so it never fights a button that is placed with a transform.
+ */
+.ui-button {
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, opacity 150ms ease, filter 150ms ease, scale 400ms var(--spring);
+}
+.ui-button:active:not(:disabled) {
+  scale: var(--press-scale, 0.97);
+  transition-duration: 100ms;
+  transition-timing-function: ease-out;
+}
+
+/* The switch: green when on, a white knob that stretches toward the other side while held. */
+.ui-switch {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  width: 42px;
+  height: 26px;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fill-strong);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 250ms ease;
+}
+.ui-switch[data-checked] {
+  background: var(--switch-on);
+}
+.ui-switch:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.ui-switch-thumb {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-inline-start: 0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.15), 0 1px 1px rgb(0 0 0 / 0.16), 0 0 0 0.5px rgb(0 0 0 / 0.04);
+  transition: translate 380ms var(--spring), width 280ms var(--spring);
+}
+.ui-switch[data-checked] .ui-switch-thumb {
+  translate: 16px 0;
+}
+.ui-switch:active:not(:disabled) .ui-switch-thumb {
+  width: 26px;
+}
+.ui-switch[data-checked]:active:not(:disabled) .ui-switch-thumb {
+  translate: 12px 0;
+}
+
+/*
+ * The segmented control: a grey track and one raised thumb that slides to the chosen segment.
+ * toggle-group.tsx measures the chosen item into --seg-x / --seg-w; until it has (first paint), the
+ * chosen item wears the thumb itself, so nothing jumps.
+ */
+.ui-segmented {
+  position: relative;
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--fill);
+  isolation: isolate;
+}
+.ui-segmented[data-disabled] {
+  opacity: 0.5;
+}
+.ui-segmented[data-thumb]::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  z-index: -1;
+  width: var(--seg-w);
+  translate: var(--seg-x) 0;
+  border-radius: 7px;
+  background: var(--raised);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.12), 0 1px 1px rgb(0 0 0 / 0.06), 0 0 0 0.5px rgb(0 0 0 / 0.04);
+  transition: translate 380ms var(--spring), width 380ms var(--spring);
+}
+.ui-segment {
+  flex: 1 0 auto;
+  padding: 4px 12px;
+  border-radius: 7px;
+  color: var(--foreground);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 150ms ease, scale 400ms var(--spring);
+}
+.ui-segment:hover:not([data-disabled]):not([data-pressed]) {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+.ui-segment:active:not([data-disabled]) {
+  scale: 0.96;
+  transition-duration: 100ms;
+  transition-timing-function: ease-out;
+}
+.ui-segmented:not([data-thumb]) > .ui-segment[data-pressed] {
+  background: var(--raised);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.12), 0 1px 1px rgb(0 0 0 / 0.06), 0 0 0 0.5px rgb(0 0 0 / 0.04);
+}
+.ui-segment[data-disabled] {
+  cursor: default;
+  opacity: 0.45;
+}
+
+/* ---- Floating surfaces: menus, select lists, popovers, dialogs -------- */
+
+/* A thick material: what is behind shows through as blurred colour, never as detail. */
+.ui-pop {
+  background: var(--material-thick);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  color: var(--foreground);
+  box-shadow: var(--shadow-pop);
+  /* Menus grow out of the control that opened them. */
+  transform-origin: var(--transform-origin, var(--radix-popper-transform-origin, center));
+}
+.ui-pop[data-state="open"],
+.ui-pop[data-state="delayed-open"],
+.ui-pop[data-state="instant-open"],
+.ui-pop[data-open]:not([data-ending-style]) {
+  animation: pop-in 320ms var(--spring);
+}
+.ui-pop[data-state="closed"],
+.ui-pop[data-ending-style] {
+  animation: pop-out 130ms ease-in forwards;
+}
+/* Centred dialogs: `scale`, so the element keeps whatever centres it. */
+.ui-dialog {
+  transform-origin: center;
+}
+.ui-dialog[data-state="open"] {
+  animation: dialog-in 360ms var(--spring);
+}
+.ui-dialog[data-state="closed"] {
+  animation: dialog-out 140ms ease-in forwards;
+}
+/* The alert: it lands from slightly larger, title and message centred over two full-width answers. */
+.ui-alert[data-state="open"] {
+  animation: alert-in 340ms var(--spring);
+}
+.ui-alert-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+}
+.ui-alert-actions > button {
+  min-height: 44px;
+  padding: 8px 10px;
+  color: var(--tint);
+  font-size: 15px;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.ui-alert-actions > button + button {
+  border-left: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+}
+/* The safe answer is the bold one. */
+.ui-alert-actions > button:first-child {
+  font-weight: 600;
+}
+.ui-alert-actions > button[data-destructive] {
+  color: var(--danger);
+}
+.ui-alert-actions > button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+.ui-alert-actions > button:active:not(:disabled) {
+  background: var(--fill-strong);
+  transition-duration: 0ms;
+}
+.ui-alert-actions > button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.ui-alert-actions > button:focus-visible {
+  outline-offset: -4px;
+  border-radius: 12px;
+}
+/* A modal dims what it interrupts. */
+.ui-overlay {
+  background: var(--scrim);
+}
+.ui-overlay[data-state="open"] {
+  animation: fade-in 220ms ease-out;
+}
+.ui-overlay[data-state="closed"] {
+  animation: fade-out 140ms ease-in forwards;
+}
+/* It leaves the way it came. */
+.ui-sheet[data-state="open"] {
+  animation: sheet-in 500ms var(--ease-sheet);
+}
+.ui-sheet[data-state="closed"] {
+  animation: sheet-out 300ms var(--ease-sheet) forwards;
+}
+.glass-panel {
+  background: var(--material-thick);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  box-shadow: var(--shadow-pop);
+}
+/* Chrome that floats over content: bars, toasts, floating tools. */
+.ui-material {
+  background: var(--material);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+@keyframes pop-out {
+  to {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+@keyframes dialog-out {
+  to {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+@keyframes alert-in {
+  from {
+    opacity: 0;
+    scale: 1.1;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+/* The sheet floats 8px off the edge: it travels its own width plus that gap. */
+@keyframes sheet-in {
+  from {
+    translate: calc(100% + 16px) 0;
+  }
+}
+@keyframes sheet-out {
+  to {
+    translate: calc(100% + 16px) 0;
+  }
+}
+
+/* Text fields and select triggers: a grey fill at rest, the tint around them while they have focus. */
+.ui-field {
+  background: var(--fill);
+  border: 1px solid transparent;
+  color: var(--foreground);
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+.ui-field:hover:not(:disabled):not(:focus-visible) {
+  background: var(--fill-strong);
+}
+.ui-field:focus-visible,
+.ui-field[data-state="open"],
+.ui-field[data-open] {
+  outline: none;
+  background: var(--surface-strong);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.ui-field:disabled,
+.ui-field[data-disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+.ui-field[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+.ui-field[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--danger) 20%, transparent);
+}
+.ui-field::placeholder {
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+}
+
+.ui-progress-indicator:not([data-indeterminate]) {
+  min-width: 3%;
+}
+
+.ui-progress-indicator[data-indeterminate] {
+  inset-inline: auto;
+  background: var(--accent);
+}
+
+/* ---- Small shared motion ---------------------------------------------- */
+
+@keyframes dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: dot-pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise-in {
+  animation: rise-in 420ms var(--spring) both;
+}
+
+/* ---- Accessibility ---------------------------------------------------- */
+
+/* Less motion is not less feedback: nothing slides, scales or springs, floating surfaces cross-fade. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ui-pop[data-state="open"],
+  .ui-pop[data-state="delayed-open"],
+  .ui-pop[data-state="instant-open"],
+  .ui-dialog[data-state="open"],
+  .ui-alert[data-state="open"],
+  .ui-sheet[data-state="open"],
+  .ui-overlay[data-state="open"],
+  .ui-tooltip[data-state="delayed-open"],
+  .ui-tooltip[data-state="instant-open"],
+  .ui-tooltip[data-open]:not([data-ending-style]),
+  .ui-pop[data-open]:not([data-ending-style]) {
+    animation: fade-in 160ms ease-out !important;
+  }
+  .ui-pop[data-state="closed"],
+  .ui-dialog[data-state="closed"],
+  .ui-sheet[data-state="closed"],
+  .ui-overlay[data-state="closed"],
+  .ui-pop[data-ending-style] {
+    animation: fade-out 120ms ease-in forwards !important;
+  }
+}
+
+/* Materials turn solid for whoever asks for less transparency or more contrast. */
+@media (prefers-reduced-transparency: reduce) {
+  :root:root {
+    --material: var(--surface-strong);
+    --material-thick: var(--surface-strong);
+    --material-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  :root:root {
+    --material: var(--surface-strong);
+    --material-thick: var(--surface-strong);
+    --material-filter: none;
+    --border: #8e8e93;
+    --muted: #3a3a3c;
+    --tint: color-mix(in srgb, var(--accent) 70%, #000);
+  }
+  html[data-theme="dark"]:root {
+    --muted: #d1d1d6;
+    --tint: color-mix(in srgb, var(--accent) 65%, #fff);
+  }
+  .ui-pop,
+  .glass-panel,
+  .ui-material {
+    outline: 1px solid var(--border);
+  }
+}
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  html[data-theme="system"]:root {
+    --muted: #d1d1d6;
+    --tint: color-mix(in srgb, var(--accent) 65%, #fff);
+  }
+}
+
+@media (forced-colors: active) {
+  :root:root {
+    --background: Canvas;
+    --foreground: CanvasText;
+    --surface: Canvas;
+    --surface-strong: Canvas;
+    --grouped: Canvas;
+    --raised: Canvas;
+    --muted: CanvasText;
+    --border: ButtonText;
+    --accent: Highlight;
+    --on-accent: HighlightText;
+    --tint: LinkText;
+    --fill: Canvas;
+    --fill-strong: Canvas;
+    --switch-on: Highlight;
+    --material: Canvas;
+    --material-thick: Canvas;
+    --material-filter: none;
+  }
+  .ui-pop,
+  .glass-panel,
+  .ui-material,
+  .ui-switch,
+  .ui-segmented,
+  .ui-field {
+    border: 1px solid ButtonText;
+  }
+  .ui-segment[data-pressed] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

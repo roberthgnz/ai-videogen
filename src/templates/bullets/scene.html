@@ -1,0 +1,43 @@
+<template>
+  <style>
+    {{{baseCss}}}
+    {{{backgroundCss}}}
+    #{{prefix}}-content { align-items: flex-start; gap: calc(var(--gap) * 0.55); }
+    #{{prefix}}-heading { font-size: {{headingSize}}px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.02em; }
+    #{{prefix}}-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: flex-start; gap: calc(var(--gap) * 0.45); max-width: 100%; }
+    #{{prefix}}-list li {
+      display: flex; align-items: center; gap: 0.5em; max-width: 100%;
+      font-family: var(--font-display); font-size: {{itemSize}}px; font-weight: 700; line-height: 1.15;
+      background: var(--chip); border-radius: 0.5em; padding: 0.34em 0.62em 0.34em 0.38em; text-shadow: none;
+      transform-origin: 0% 50%;
+    }
+    #{{prefix}}-list .num {
+      flex: none; width: 1.5em; height: 1.5em; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--accent); color: var(--on-accent); font-weight: 900; font-size: 0.82em;
+    }
+  </style>
+  <div id="root" data-composition-id="{{id}}" data-width="{{width}}" data-height="{{height}}">
+    {{{background}}}
+    <div id="{{prefix}}-content" class="content">
+      <h2 id="{{prefix}}-heading" class="display outlined">{{heading}}</h2>
+      <ul id="{{prefix}}-list">
+        {{{items}}}
+      </ul>
+    </div>
+  </div>
+  <script>
+    (function () {
+      // Each item appears when the narration reaches it (seconds, scene time).
+      var REVEAL = {{{revealTimes}}};
+      var tl = gsap.timeline({ paused: true });
+      {{{backgroundTweens}}}
+      tl.fromTo("#{{prefix}}-heading", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 0.1);
+      REVEAL.forEach(function (t, i) {
+        tl.fromTo("#{{prefix}}-item-" + i, { opacity: 0, x: -50, scale: 0.9 }, { opacity: 1, x: 0, scale: 1, duration: 0.32, ease: "back.out(1.8)" }, t);
+      });
+      {{{exitTween}}}
+      window.__timelines["{{id}}"] = tl;
+    })();
+  </script>
+</template>

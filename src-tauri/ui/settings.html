@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width">
+  <title data-localize>VideoGen Settings</title>
+  <link rel="stylesheet" href="native.css"><script src="localization.js" defer></script><script src="settings.js" defer></script>
+</head>
+<body><main>
+  <h1 data-localize>Settings</h1>
+  <p data-localize>Keys are stored securely on this device. The fields never show saved keys.</p>
+  <form id="credentials" autocomplete="off">
+    <div id="providers"></div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <button type="submit" data-localize>Save changes</button>
+    <button id="import" type="button" data-localize>Import keys from an .env file</button>
+  </form>
+  <hr>
+  <p data-localize>Restart VideoGen to apply changes. Save any edits and let active renders finish first.</p>
+  <button id="restart" type="button" data-localize>Restart VideoGen</button>
+</main></body>
+</html>

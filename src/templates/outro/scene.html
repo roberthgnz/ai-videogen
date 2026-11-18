@@ -1,0 +1,37 @@
+<template>
+  <style>
+    {{{baseCss}}}
+    {{{backgroundCss}}}
+    #{{prefix}}-content { align-items: center; text-align: center; }
+    #{{prefix}}-headline { font-size: {{headlineSize}}px; max-width: 100%; }
+    #{{prefix}}-cta {
+      margin: 0; padding: 0.42em 1em; border-radius: 999px; max-width: 100%;
+      background: var(--accent); color: var(--on-accent); text-shadow: none;
+      font-family: var(--font-display); font-weight: 900; font-size: {{ctaSize}}px; line-height: 1.15;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+  </style>
+  <div id="root" data-composition-id="{{id}}" data-width="{{width}}" data-height="{{height}}">
+    {{{background}}}
+    <div id="{{prefix}}-content" class="content">
+      <h2 id="{{prefix}}-headline" class="display outlined">{{headline}}</h2>
+      <p id="{{prefix}}-cta">{{cta}}</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var D = {{duration}};
+      var tl = gsap.timeline({ paused: true });
+      {{{backgroundTweens}}}
+      tl.fromTo("#{{prefix}}-headline", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.1);
+      tl.fromTo("#{{prefix}}-cta", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.4)" }, 0.25);
+      // The button keeps asking: a few finite pulses until the end.
+      var pulses = Math.max(1, Math.floor((D - 1) / 1.2));
+      for (var p = 0; p < pulses; p++) {
+        tl.to("#{{prefix}}-cta", { scale: 1.07, duration: 0.3, ease: "sine.inOut" }, 0.9 + p * 1.2);
+        tl.to("#{{prefix}}-cta", { scale: 1, duration: 0.5, ease: "sine.inOut" }, 1.2 + p * 1.2);
+      }
+      window.__timelines["{{id}}"] = tl;
+    })();
+  </script>
+</template>

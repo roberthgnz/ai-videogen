@@ -1,0 +1,75 @@
+{
+  "name": "ai-videogen",
+  "version": "0.1.0",
+  "description": "Local video editor with a timeline, subtitles, and HyperFrames MP4 export.",
+  "license": "Apache-2.0",
+  "private": true,
+  "imports": {
+    "#videogen-locale": {
+      "browser": "./src/lib/i18n/browser.ts",
+      "default": "./src/lib/i18n/server.ts"
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roberthgnz/ai-videogen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/roberthgnz/ai-videogen/issues"
+  },
+  "scripts": {
+    "desktop:prepare": "node scripts/desktop/prepare.mjs",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build",
+    "desktop:check": "cargo check --manifest-path src-tauri/Cargo.toml",
+    "dev": "next dev -H 127.0.0.1",
+    "build": "next build",
+    "start": "next start -H 127.0.0.1",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test:edit-notes": "tsx scripts/verify-edit-notes.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "db:studio": "drizzle-kit studio",
+    "visuals": "tsx scripts/visuals.ts",
+    "compose": "tsx scripts/compose.ts",
+    "render": "tsx scripts/render.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-dialog": "^2.8.4",
+    "@tauri-apps/plugin-fs": "^2.7.1",
+    "@tauri-apps/plugin-opener": "^2.7.3",
+    "@ui-sdk/core": "^0.1.0-beta.3",
+    "@ui-sdk/react": "^0.1.0-beta.3",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-orm": "^0.45.4",
+    "gsap": "^3.15.1",
+    "next": "16.4.6",
+    "radix-ui": "^1.8.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@next/env": "16.4.6",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@tauri-apps/cli": "^2.12.4",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "adm-zip": "^0.6.1",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "hyperframes": "0.9.33",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}

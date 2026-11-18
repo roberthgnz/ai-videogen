@@ -1,0 +1,28 @@
+<template>
+  <style>
+    {{{baseCss}}}
+    {{{backgroundCss}}}
+    #{{prefix}}-content { align-items: center; text-align: center; gap: calc(var(--gap) * 0.45); }
+    #{{prefix}}-headline { font-size: {{headlineSize}}px; color: var(--accent); max-width: 100%; transform-origin: 50% 60%; }
+    #{{prefix}}-body { font-size: {{bodySize}}px; margin: 0; max-width: 94%; }
+  </style>
+  <div id="root" data-composition-id="{{id}}" data-width="{{width}}" data-height="{{height}}">
+    {{{background}}}
+    <div id="{{prefix}}-content" class="content">
+      <h2 id="{{prefix}}-headline" class="display outlined">{{headline}}</h2>
+      <p id="{{prefix}}-body" class="support outlined">{{body}}</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      // The fact pops in when the narration reaches it.
+      var AT = {{revealAt}};
+      var tl = gsap.timeline({ paused: true });
+      {{{backgroundTweens}}}
+      tl.fromTo("#{{prefix}}-headline", { opacity: 0, scale: 0.55 }, { opacity: 1, scale: 1, duration: 0.32, ease: "back.out(2.2)" }, AT);
+      tl.fromTo("#{{prefix}}-body", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, AT + 0.18);
+      {{{exitTween}}}
+      window.__timelines["{{id}}"] = tl;
+    })();
+  </script>
+</template>

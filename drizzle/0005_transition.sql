@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD `transition` text DEFAULT 'auto' NOT NULL;

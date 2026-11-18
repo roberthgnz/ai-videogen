@@ -1,0 +1,76 @@
+/* Home: a headline, the composer and the project gallery, on the same quiet surfaces as the studio. */
+.home { display: flex; flex-direction: column; min-height: 100dvh; background: var(--background); color: var(--foreground); }
+html[data-desktop="true"] .home { min-height: calc(100dvh - var(--titlebar-height)); }
+/*
+ * The app's navigation (app-nav.tsx), the same on every page outside the studio.
+ * The bar floats: clear over the top of the page, a material with a hairline once content scrolls under it.
+ */
+.app-bar { position: sticky; top: var(--titlebar-height, 0px); z-index: 30; display: flex; flex: none; align-items: center; justify-content: space-between; gap: 10px; height: 56px; padding: 0 24px; background: var(--material); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); box-shadow: 0 .5px 0 var(--border); }
+@supports (animation-timeline: scroll()) {
+  .app-bar { animation: app-bar-edge linear both; animation-timeline: scroll(root); animation-range: 0 40px; }
+  @keyframes app-bar-edge { from { background-color: transparent; box-shadow: 0 .5px 0 transparent; } }
+}
+.app-brand { display: flex; align-items: center; gap: 9px; border-radius: 8px; font-size: 15px; font-weight: 650; letter-spacing: -.02em; transition: opacity .15s; }
+.app-brand:active { opacity: .6; transition-duration: 0s; }
+.app-bar-end { display: flex; align-items: center; gap: 6px; }
+/* The tab bar, as on iPadOS: a capsule that floats over the middle of the bar, on its own thick material so it reads
+   over whatever scrolls under it. The page you are on is the raised tab, in the tint. */
+.app-tabs { position: fixed; top: calc(var(--titlebar-height, 0px) + 9px); left: 50%; z-index: 31; display: flex; gap: 2px; padding: 3px; border-radius: 99px; translate: -50% 0; background: var(--material-thick); -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); box-shadow: 0 0 0 .5px color-mix(in srgb, var(--foreground) 10%, transparent), 0 4px 16px rgb(0 0 0 / .08); }
+.app-tabs a { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 99px; color: var(--foreground); font-size: 13px; font-weight: 550; white-space: nowrap; -webkit-tap-highlight-color: transparent; transition: background-color .2s, color .2s, box-shadow .2s, scale .4s var(--spring); }
+.app-tabs a svg { flex: none; color: var(--muted); transition: color .2s; }
+.app-tabs a:hover:not([aria-current]) { background: var(--fill); }
+.app-tabs a:active { scale: .95; transition-duration: .1s; transition-timing-function: ease-out; }
+.app-tabs a[aria-current] { background: var(--fill-strong); color: var(--tint); font-weight: 600; }
+.app-tabs a[aria-current] svg { color: var(--tint); }
+.app-tabs a:focus-visible { outline-offset: 1px; }
+.home-main { display: flex; flex: 1; flex-direction: column; width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 24px 72px; }
+
+.home-hero { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: clamp(48px, 10vh, 112px) 0 64px; text-align: center; }
+/* A large title: bold, tight leading, tracking that tightens as it grows. */
+.home-hero h1 { max-width: 15ch; font-size: clamp(34px, 5vw, 56px); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; text-wrap: balance; }
+.home-hero > p { max-width: 520px; color: var(--muted); font-size: clamp(15px, 1.4vw, 17px); line-height: 1.55; text-wrap: balance; }
+.home-features { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 4px 0 18px; }
+.home-features li { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 99px; background: var(--fill); color: var(--foreground); font-size: 12.5px; font-weight: 500; }
+.home-features svg { color: var(--tint); }
+.home-loading { color: var(--muted); font-size: 13px; }
+
+.home-projects-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+.home-projects-head h2 { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; }
+.home-projects-head span { color: var(--muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+.home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px 16px; }
+.project-card { position: relative; min-width: 0; }
+/* The whole card sinks under the press and springs back, like an app icon. */
+.project-card-link { display: block; border-radius: 16px; outline-offset: 4px; transition: scale .45s var(--spring); }
+.project-card-link:active { scale: .97; transition-duration: .1s; transition-timing-function: ease-out; }
+.project-card-cover { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 16px; background: var(--surface); }
+.project-card-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--spring); }
+.project-card:hover .project-card-cover img { transform: scale(1.035); }
+.project-card-cover::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 7%, transparent); pointer-events: none; }
+.project-card-empty { color: var(--muted); font-size: 12.5px; }
+.project-card-format, .project-card-badge { position: absolute; padding: 2px 8px; border-radius: 99px; background: rgb(0 0 0 / .58); color: #fff; font-size: 11px; font-weight: 550; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.project-card-format { top: 9px; left: 9px; font-family: var(--font-geist-mono), monospace; font-size: 10.5px; }
+.project-card-badge { bottom: 9px; left: 9px; }
+.project-card-badge.is-done { background: rgb(36 138 61 / .88); }
+.project-card-badge.is-error { background: rgb(215 0 21 / .86); }
+.project-card-badge.is-busy::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #fff; vertical-align: 1px; animation: dot-pulse 1.2s infinite ease-in-out; }
+.project-card-title { margin-top: 10px; overflow: hidden; font-size: 13.5px; font-weight: 600; letter-spacing: -.005em; text-overflow: ellipsis; white-space: nowrap; }
+.project-card-meta { margin-top: 1px; color: var(--muted); font-size: 12px; }
+.project-card-menu { position: absolute; top: 8px; right: 8px; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 99px; background: rgb(255 255 255 / .78); color: #000; -webkit-backdrop-filter: var(--material-filter); backdrop-filter: var(--material-filter); box-shadow: 0 1px 4px rgb(0 0 0 / .18); opacity: 0; transition: opacity .15s, scale .4s var(--spring); cursor: pointer; }
+.project-card-menu:active { scale: .9; transition-duration: .1s; transition-timing-function: ease-out; }
+.project-card:hover .project-card-menu, .project-card:focus-within .project-card-menu, .project-card-menu[data-state=open] { opacity: 1; }
+@media (hover: none) { .project-card-menu { opacity: 1; } }
+/* A narrow window gets the iPhone's tab bar: along the bottom edge, under the thumb, symbols over their names.
+   The page keeps room for it, and what floats at the bottom (the save bar, the selection toolbar) sits above it. */
+@media (max-width: 700px) {
+  .app-tabs { top: auto; right: 0; bottom: 0; left: 0; gap: 0; padding: 5px 8px calc(5px + env(safe-area-inset-bottom)); border-radius: 0; translate: none; background: var(--material); box-shadow: 0 -.5px 0 var(--border); }
+  .app-tabs a { flex: 1; flex-direction: column; gap: 3px; height: 46px; padding: 0; border-radius: 12px; color: var(--muted); font-size: 10px; font-weight: 550; letter-spacing: .01em; }
+  .app-tabs a svg { width: 22px; height: 22px; color: inherit; }
+  .app-tabs a[aria-current] { background: transparent; }
+  .app-tabs a:hover:not([aria-current]) { background: transparent; }
+  .home { padding-bottom: calc(58px + env(safe-area-inset-bottom)); }
+  .home .settings-savebar, .home .library-bulk { bottom: calc(68px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 640px) {
+  .app-bar, .home-main { padding-inline: 16px; }
+  .home-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+}

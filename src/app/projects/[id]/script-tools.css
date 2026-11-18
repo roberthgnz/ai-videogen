@@ -1,0 +1,101 @@
+/*
+ * The script panel: a document of scenes to read top to bottom, each one a card that opens in place to be
+ * edited. (The panel's frame, its tabs and its scroller are in studio.css.)
+ */
+
+/* A script needs room to be read: the library column widens while the script is in it. */
+.pro-studio[data-panel="script"]:not([data-library-open="false"]) { --library-width: 400px; }
+@media (max-width: 979px) { .pro-studio[data-panel="script"] .pro-library { width: min(400px, calc(100vw - var(--rail-width))); } }
+
+/* What went wrong, at the top of the panel where it is seen. */
+.script-error { margin: 0 0 10px; padding: 9px 11px; border-radius: 12px; background: color-mix(in srgb, var(--danger) 10%, transparent); color: var(--danger); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+
+.script-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 2px 10px; font-size: 12.5px; }
+.script-summary strong { font-weight: 600; }
+.script-summary span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+/* ---- Scene cards -------------------------------------------------------- */
+.script-scenes { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.script-scene { border-radius: 14px; background: var(--surface); scroll-margin: 8px; transition: background-color .2s, box-shadow .2s; }
+/* The one being edited lifts off the list and wears the tint. */
+.script-scene[data-open] { background: var(--surface-strong); box-shadow: 0 0 0 1.5px var(--accent), 0 6px 20px rgb(0 0 0 / .08); }
+.script-scene[data-issue]:not([data-open]) { box-shadow: 0 0 0 1.5px var(--danger); }
+.script-scene-head { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 14px; gap: 0 8px; align-items: start; width: 100%; padding: 11px 12px; border-radius: 14px; text-align: left; transition: background-color .15s; }
+.script-scene:not([data-open]) > .script-scene-head:hover { background: var(--fill); }
+.script-scene:not([data-open]) > .script-scene-head:active { background: var(--fill-strong); transition-duration: 0s; }
+.script-scene-head:focus-visible { outline-offset: -3px; }
+.script-scene-head > span:first-child { padding-top: 2px; color: var(--subtle); font: 11px var(--font-geist-mono), monospace; }
+.script-scene-head > span:nth-child(2) { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.script-scene-head strong { overflow: hidden; font-size: 13px; font-weight: 600; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+/* Closed, the card is the script: what the voice says, readable without opening anything. */
+.script-scene-head small { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; color: color-mix(in srgb, var(--foreground) 78%, transparent); font-size: 12.5px; line-height: 1.5; }
+.script-scene-head i { display: flex; align-items: center; gap: 6px; margin-top: 2px; color: var(--muted); font-size: 11.5px; font-style: normal; }
+.script-scene-head i::before, .script-badge::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: color-mix(in srgb, var(--foreground) 28%, transparent); }
+.script-scene-head i[data-tone="ok"]::before, .script-badge[data-tone="ok"]::before { background: var(--switch-on); }
+.script-scene-head i[data-tone="warn"]::before, .script-badge[data-tone="warn"]::before { background: #ff9f0a; }
+.script-scene-head i[data-tone="busy"]::before, .script-badge[data-tone="busy"]::before { background: var(--accent); animation: dot-pulse 1.2s infinite ease-in-out; }
+.script-scene-head i[data-tone="bad"]::before, .script-badge[data-tone="bad"]::before { background: var(--danger); }
+.script-scene-head em { padding-top: 1px; color: var(--muted); font-size: 11.5px; font-style: normal; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.script-scene-head > svg { width: 14px; height: 14px; margin-top: 2px; color: var(--subtle); transition: rotate .35s var(--spring); }
+.script-scene[data-open] > .script-scene-head > svg { rotate: 90deg; }
+/* The editor arrives from under its own title. */
+.script-scene-body { padding: 0 12px 14px; animation: script-open .4s var(--spring); }
+@keyframes script-open { from { opacity: 0; translate: 0 -6px; } }
+.script-add { margin-left: 2px; }
+.script-add svg { width: 13px; height: 13px; }
+
+/* ---- The open scene ----------------------------------------------------- */
+.script-fields { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.script-toolbar { display: flex; align-items: center; gap: 2px; margin-bottom: -6px; padding-top: 6px; border-top: 1px solid var(--border); }
+.script-toolbar > span:first-child { flex: 1; color: var(--muted); font-size: 11.5px; }
+.script-toolbar svg { width: 15px; height: 15px; }
+.script-section { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.script-section > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.script-section h4 { font-size: 12.5px; font-weight: 600; letter-spacing: -.005em; }
+.script-section > header span { color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+/* The narration is the script: the roomiest field, and it grows with what is written. */
+.script-narration { font-size: 13px; line-height: 1.55; resize: vertical; }
+@supports (field-sizing: content) { .script-narration { field-sizing: content; min-height: 84px; max-height: 320px; } }
+.script-hint { color: var(--muted); font-size: 11.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.script-hint[data-tone="warn"] { color: color-mix(in srgb, #ff9f0a 62%, var(--foreground)); }
+.script-hint[data-tone="bad"] { color: var(--danger); }
+.script-issues { display: flex; flex-direction: column; gap: 3px; padding: 9px 11px 9px 26px; border-radius: 12px; background: color-mix(in srgb, var(--danger) 10%, transparent); color: var(--danger); font-size: 12px; line-height: 1.5; list-style: disc; }
+.script-preview { align-self: flex-start; }
+
+/* Voice. */
+.script-badge { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 99px; background: var(--fill); color: var(--muted); font-size: 11.5px; font-weight: 550; white-space: nowrap; }
+.script-badge[data-tone="ok"] { background: color-mix(in srgb, var(--switch-on) 16%, transparent); color: var(--success); }
+.script-badge[data-tone="warn"] { background: color-mix(in srgb, #ff9f0a 16%, transparent); color: color-mix(in srgb, #ff9f0a 62%, var(--foreground)); }
+.script-badge[data-tone="busy"] { background: color-mix(in srgb, var(--accent) 13%, transparent); color: var(--tint); }
+.script-badge[data-tone="bad"] { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+.script-voice { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.script-voice > div:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.script-voice > div:first-child > span:not(.script-badge) { color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.script-voice > div:first-child > button { margin-left: auto; }
+.script-voice audio { width: 100%; height: 34px; }
+.script-words { font-size: 11.5px; }
+.script-words > button { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
+.script-words > button:hover { color: var(--foreground); }
+.script-words > button > span { transition: rotate .3s var(--spring); }
+.script-words > button[data-state="open"] > span { rotate: 90deg; }
+.script-words > div { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; font: 11px var(--font-geist-mono), monospace; }
+.script-words > div > span { padding: 2px 6px; border-radius: 6px; background: var(--fill); }
+.script-words i { color: var(--muted); font-style: normal; }
+
+/* ---- No script yet ------------------------------------------------------ */
+.script-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 36px 12px 20px; text-align: center; }
+.script-empty > span:first-child { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 6px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--tint); }
+.script-empty > span:first-child svg { width: 19px; height: 19px; }
+.script-empty h3 { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.script-empty p { max-width: 280px; margin-bottom: 6px; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.script-empty small { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+.script-empty small button { color: var(--tint); font-weight: 550; }
+
+/* ---- The bar under the script ------------------------------------------- */
+/* What is not saved yet, with its two ways out; under it one main action, and the rest one level down in «Más». */
+.script-bar { display: flex; flex: none; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid var(--border); }
+.script-bar button { border-radius: 99px; }
+.script-save { display: flex; align-items: center; gap: 6px; padding: 5px 5px 5px 13px; border-radius: 99px; background: color-mix(in srgb, var(--accent) 11%, transparent); font-size: 12.5px; font-weight: 550; animation: script-open .4s var(--spring); }
+.script-save > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.script-actions { display: flex; gap: 6px; }
+.script-actions > button:first-child { flex: 1; justify-content: center; }

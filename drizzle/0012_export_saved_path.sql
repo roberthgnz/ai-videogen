@@ -1,0 +1,1 @@
+ALTER TABLE `videos` ADD `saved_path` text;

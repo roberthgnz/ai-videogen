@@ -1,0 +1,1 @@
+ALTER TABLE `videos` ADD `scene_id` text REFERENCES scenes(id) ON DELETE cascade;
